@@ -19,3 +19,24 @@ services:
       timeout: 10s
       retries: 3
     restart: always
+    depends_on:
+      - consumer_film
+      - consumer_user
+
+  consumer_film:
+    build: nx_etl_kafka_ch/
+    environment:
+      - TOPIC=film
+      - GROUP_ID=film
+      - PYTHONUNBUFFERED=1
+      - CLICKHOUSE_NODE_MAIN=clickhouse-node1
+      - BOOTSTRAP_SERVERS=kafka-0:9092
+
+  consumer_user:
+    build: nx_etl_kafka_ch/
+    environment:
+      - TOPIC=user
+      - GROUP_ID=user
+      - PYTHONUNBUFFERED=1
+      - CLICKHOUSE_NODE_MAIN=clickhouse-node1
+      - BOOTSTRAP_SERVERS=kafka-0:9092
