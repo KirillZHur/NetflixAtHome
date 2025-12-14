@@ -1,13 +1,4 @@
-/* ============================================================
-   SEED DATA FOR CLICKHOUSE
-   Period: 2023-10-01 — 2023-12-31
-   Users: 10 000
-   Films:   500
-   ============================================================ */
-
-/* ------------------------------------------------------------
-   1. USERS (TEMP)
-   ------------------------------------------------------------ */
+-- 1. USERS (TEMP)
 
 DROP TEMPORARY TABLE IF EXISTS tmp_users;
 
@@ -21,9 +12,7 @@ SELECT generateUUIDv4()
 FROM numbers(10000);
 
 
-/* ------------------------------------------------------------
-   2. USER EVENTS
-   ------------------------------------------------------------ */
+-- 2. USER EVENTS
 
 -- user_registered (1 per user)
 INSERT INTO default.user_events
@@ -44,10 +33,8 @@ FROM tmp_users
 ARRAY JOIN range(30) AS login_idx;
 
 
-/* ------------------------------------------------------------
-   3. FILMS (TEMP)
-   ------------------------------------------------------------ */
 
+-- 3. FILMS (TEMP)
 DROP TEMPORARY TABLE IF EXISTS tmp_films;
 
 CREATE TEMPORARY TABLE tmp_films
@@ -60,9 +47,7 @@ SELECT generateUUIDv4()
 FROM numbers(500);
 
 
-/* ------------------------------------------------------------
-   4. FILM EVENTS
-   ------------------------------------------------------------ */
+-- 4. FILM EVENTS
 
 -- film_visited
 INSERT INTO default.film_events
@@ -103,9 +88,7 @@ SELECT
 FROM numbers(180000) AS n;
 
 
-/* ------------------------------------------------------------
-   5. CLEANUP
-   ------------------------------------------------------------ */
+-- 5. CLEANUP
 
 DROP TEMPORARY TABLE IF EXISTS tmp_users;
 DROP TEMPORARY TABLE IF EXISTS tmp_films;
