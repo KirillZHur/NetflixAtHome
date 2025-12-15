@@ -6,7 +6,7 @@ down_kafka:
 
 up_clickhouse:
 	docker-compose -f docker-compose.clickhouse.yaml up -d
-	sleep 3
+	sleep 5
 	docker exec -i clickhouse-node1 clickhouse-client --multiquery < ./clickhouse_data/data.sql
 
 down_clickhouse:

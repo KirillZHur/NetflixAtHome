@@ -50,11 +50,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
     volumes:
-      - grafana_data1:/var/lib/grafana_data
-      - ./grafana_data/provisioning:/etc/grafana_data/provisioning
-      - ./grafana_data/dashboards:/var/lib/grafana_data/dashboards
-    restart: unless-stopped
+      - grafana_data:/var/lib/grafana
 
 volumes:
-  grafana_data1:
-    driver: local
+  grafana_data:
