@@ -1,0 +1,56 @@
+x-env:
+  &default-env
+  env_file:
+    - .env
+
+services:
+
+  nx_metrics:
+    build: nx_metrics/
+    container_name: nx_metrics
+    <<: *default-env
+    ports:
+      - "8900:5000"
+    environment:
+      PYTHONUNBUFFERED: 1
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:5000/ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    depends_on:
+      - consumer_film
+      - consumer_user
+
+  consumer_film:
+    build: nx_etl_kafka_ch/
+    environment:
+      - TOPIC=film
+      - GROUP_ID=film
+      - PYTHONUNBUFFERED=1
+      - CLICKHOUSE_NODE_MAIN=clickhouse-node1
+      - BOOTSTRAP_SERVERS=kafka-0:9092
+
+  consumer_user:
+    build: nx_etl_kafka_ch/
+    environment:
+      - TOPIC=user
+      - GROUP_ID=user
+      - PYTHONUNBUFFERED=1
+      - CLICKHOUSE_NODE_MAIN=clickhouse-node1
+      - BOOTSTRAP_SERVERS=kafka-0:9092
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  grafana_data:
