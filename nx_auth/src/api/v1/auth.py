@@ -48,83 +48,6 @@ async def register(
             status_code=HTTPStatus.CONFLICT, detail="Current user already exists."
         )
 
-
-@router.post(
-    "/register_via_oauth",
-    summary="Регистрация пользователя через внешний OAuth",
-    description="Регистрирует пользователя посредством входа через внешний Oauth",
-    response_model=bool,
-)
-async def register_via_oauth(
-    oauth_token: Annotated[str, Header(alias="Authorization")],
-    provider: str,
-    auth_service: Annotated[AuthService, Depends(get_auth_service)],
-    db: Annotated[AsyncSession, Depends(get_session)],
-) -> bool:
-    """Регистрация через внешний OAuth."""
-
-    user_info: UniUserOAuth = await get_user_info_oauth(
-        provider=provider, oauth_token=oauth_token
-    )
-
-    username, email = user_info.username, user_info.email
-
-    if await auth_service.identificate_user(user=TokenData(username=username), db=db):
-        raise HTTPException(
-            status_code=HTTPStatus.CONFLICT, detail="Current user already exists."
-        )
-
-    user = UserCreate(
-        username=username,
-        email=email or f"{token_urlsafe(5)}@netflix_at_home.com",
-        password=token_urlsafe(16),
-        outer_oauth_only=True,
-    )
-
-    await auth_service.register(user=user, db=db, provider=provider)
-    return True
-
-
-@router.post(
-    "/login_via_oauth",
-    summary="Логин через внешний OAuth",
-    description="Вход в сервис посредством входа через внешний OAuth",
-    response_model=Token,
-)
-async def login_via_oauth(
-    oauth_token: Annotated[str, Header(alias="Authorization")],
-    provider: str,
-    auth_service: Annotated[AuthService, Depends(get_auth_service)],
-    token_service: Annotated[TokenService, Depends(get_token_service)],
-    management_service: Annotated[ManagementService, Depends(get_management_service)],
-    db: Annotated[AsyncSession, Depends(get_session)],
-) -> Token:
-    """Логин через внешний OAuth."""
-
-    user_info: UniUserOAuth = await get_user_info_oauth(
-        provider=provider, oauth_token=oauth_token
-    )
-
-    user: Users | None = await auth_service.identificate_user(
-        user=TokenData(username=user_info.username), db=db
-    )
-
-    if not user:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail="User with this email or username doesn't exist.",
-        )
-
-    tokens: Token = await auth_service.login(
-        db=db,
-        user=user,
-        token_service=token_service,
-        management_service=management_service,
-    )
-
-    return tokens
-
-
 @router.post(
     "/login",
     summary="Логин пользователя",
@@ -154,49 +77,6 @@ async def login(
 
     tokens = await auth_service.login(user, db, token_service, management_service)
     return tokens
-
-
-@router.post(
-    "/extra_login",
-    summary="Логин пользователя для внутренних сервисов",
-    description="Url для получения токенов для входа в систему для сервисов",
-    response_model=UserLoginFullInfo,
-)
-async def extra_login(
-    get_user: Annotated[UserShortData, Body()],
-    auth_service: Annotated[AuthService, Depends(get_auth_service)],
-    management_service: Annotated[ManagementService, Depends(get_management_service)],
-    db: Annotated[AsyncSession, Depends(get_session)],
-) -> UserLoginFullInfo:
-    """Логин для сервисов (передаем ЛИБО е-mail либо юзернейм)"""
-    logger.info("User: %s" % get_user.username)
-
-    user: Users | None = await auth_service.identificate_user(get_user, db)
-
-    if not user:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail="User with this email or username does not exists",
-        )
-    if not await auth_service.check_password(get_user.password, user):
-        raise HTTPException(
-            status_code=HTTPStatus.UNPROCESSABLE_ENTITY, detail="Wrong password."
-        )
-
-    roles = await management_service.get_user_roles(user_id=user.user_id, db=db)
-    roles = [role.title for role in roles]
-
-    logger.info("USER: %s %s" % (roles, user.user_id))
-    return UserLoginFullInfo(
-        user_id=user.user_id,
-        username=user.username,
-        email=user.email,
-        roles=roles,
-        is_active=user.is_active,
-        is_stuff=user.is_stuff,
-        is_superuser=user.is_superuser,
-    )
-
 
 @router.post(
     "/logout",
@@ -283,19 +163,3 @@ async def enter_history(
         user_id=user.user_id, pagination=pagination, db=db
     )
 
-
-@router.get(
-    "/social_networks",
-    summary="Список привязанных соц.сетей",
-    description="Получить список привязанных соц.сетей",
-    response_model=list[SocialNetworks],
-)
-@required([RoleName.BASE_USER])
-async def social_networks(
-    user: Annotated[TokenPayload, Depends(get_current_user)],
-    auth_service: Annotated[AuthService, Depends(get_auth_service)],
-    db: Annotated[AsyncSession, Depends(get_session)],
-) -> list[SocialNetworks]:
-    """Получить список привязанных соц.сетей."""
-
-    return await auth_service.get_user_social_networks(user_id=user.user_id, db=db)
