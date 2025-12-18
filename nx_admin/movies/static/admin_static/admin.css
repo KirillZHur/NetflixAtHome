@@ -1,0 +1,394 @@
+:root {
+    --bg: #0b0b0b;
+
+    --panelA: rgba(20, 20, 22, .92);
+    --panelB: rgba(14, 14, 16, .92);
+
+    --border: rgba(255, 255, 255, .06);
+    --border2: rgba(255, 255, 255, .10);
+
+    --text: rgba(255, 255, 255, .92);
+    --muted: rgba(255, 255, 255, .62);
+
+    --red: #ef1b26;
+    --red2: #ff1a25;
+    --focus: rgba(229, 9, 20, .35);
+
+    --shadow: 0 22px 55px rgba(0, 0, 0, .55);
+    --shadowSoft: 0 10px 28px rgba(0, 0, 0, .38);
+
+    --r: 16px;
+    --r2: 12px;
+
+    --ctl-h: 48px;
+    --ctl-fz: 14px;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background: radial-gradient(1200px 600px at 60% -10%, rgba(229, 9, 20, .14), transparent 60%),
+    radial-gradient(900px 500px at 10% 20%, rgba(255, 255, 255, .05), transparent 55%),
+    var(--bg) !important;
+    color: var(--text) !important;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+#container, #content, #content-main {
+    background: transparent !important;
+}
+
+#content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 28px;
+}
+
+#header {
+    background: linear-gradient(180deg, rgba(18, 18, 20, .98), rgba(10, 10, 11, .92)) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+#branding h1, #branding h1 a {
+    color: var(--text) !important;
+    font-weight: 800;
+}
+
+#user-tools, #user-tools a {
+    color: var(--muted) !important;
+}
+
+#user-tools a:hover {
+    color: var(--text) !important;
+}
+
+div.breadcrumbs {
+    background: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+    color: var(--muted) !important;
+}
+
+div.breadcrumbs a {
+    color: rgba(255, 255, 255, .78) !important;
+}
+
+div.breadcrumbs a:hover {
+    color: var(--text) !important;
+}
+
+#content h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: .2px;
+    margin: 18px 0 18px;
+    text-align: center;
+}
+
+#content h1::after {
+    content: "";
+    display: block;
+    width: 84px;
+    height: 3px;
+    margin: 12px auto 0;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    opacity: .9;
+}
+
+.module, fieldset, .inline-group, .dashboard-module {
+    background: linear-gradient(180deg, var(--panelA), var(--panelB)) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--r) !important;
+    box-shadow: var(--shadow);
+    margin-bottom: 22px;
+    overflow: hidden;
+}
+
+.module h2, fieldset > h2, .inline-group h2 {
+    background: transparent !important;
+    color: var(--text) !important;
+    font-weight: 750;
+    padding: 14px 16px !important;
+    border-bottom: 1px solid var(--border) !important;
+    letter-spacing: .3px;
+    position: relative;
+}
+
+.module h2::before, fieldset > h2::before, .inline-group h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--red);
+    opacity: .85;
+}
+
+.form-row {
+    padding: 14px 16px !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.form-row:last-child {
+    border-bottom: none !important;
+}
+
+label {
+    color: var(--muted) !important;
+    font-weight: 650 !important;
+}
+
+input, textarea, select, .vTextField {
+    background: rgba(255, 255, 255, .04) !important;
+    border: 1px solid rgba(255, 255, 255, .10) !important;
+    border-radius: var(--r2) !important;
+    color: var(--text) !important;
+    padding: 10px 12px !important;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    box-sizing: border-box !important;
+}
+
+textarea {
+    min-height: 150px;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: rgba(229, 9, 20, .85) !important;
+    box-shadow: 0 0 0 4px var(--focus) !important;
+    outline: none !important;
+    background: rgba(255, 255, 255, .055) !important;
+}
+
+select {
+    height: var(--ctl-h) !important;
+    line-height: calc(var(--ctl-h) - 2px) !important;
+    font-size: var(--ctl-fz) !important;
+    padding: 10px 44px 10px 12px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+select option {
+    color: #111 !important;
+    background: #fff !important;
+}
+
+.form-row select {
+    width: min(760px, 100%) !important;
+    max-width: 100% !important;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: rgba(255, 255, 255, .06) !important;
+    border: 1px solid rgba(255, 255, 255, .10) !important;
+    color: var(--text) !important;
+    border-radius: var(--r2) !important;
+    padding: 10px 14px !important;
+    font-weight: 700;
+    transition: transform .12s ease, background .12s ease;
+}
+
+.button:hover, input[type=submit]:hover, a.button:hover {
+    background: rgba(255, 255, 255, .10) !important;
+    transform: translateY(-1px);
+}
+
+.submit-row {
+    background: transparent !important;
+    border-top: 1px solid var(--border) !important;
+}
+
+.submit-row input.default {
+    background: linear-gradient(180deg, var(--red), #b50710) !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    color: #fff !important;
+    box-shadow: 0 14px 34px rgba(229, 9, 20, .25);
+    padding: 12px 22px !important;
+    font-size: 15px !important;
+}
+
+.submit-row input.default:hover {
+    background: linear-gradient(180deg, var(--red2), #c20a12) !important;
+}
+
+#nav-sidebar {
+    background: linear-gradient(180deg, rgba(16, 16, 18, .96), rgba(10, 10, 11, .96)) !important;
+    border-right: 1px solid var(--border) !important;
+}
+
+#nav-sidebar .app-caption,
+#nav-sidebar caption,
+#nav-sidebar .module caption,
+#nav-sidebar .module th,
+#nav-sidebar .module h2 {
+    background: rgba(255, 255, 255, .04) !important;
+    color: rgba(255, 255, 255, .86) !important;
+    font-weight: 750 !important;
+    letter-spacing: .04em !important;
+}
+
+#nav-sidebar a {
+    color: rgba(255, 255, 255, .72) !important;
+    transition: background .15s ease, color .15s ease;
+}
+
+#nav-sidebar a:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, .05) !important;
+}
+
+#nav-sidebar .current-app > a,
+#nav-sidebar .current-model > a,
+#nav-sidebar .current-model a:link,
+#nav-sidebar .current-model a:visited {
+    background: linear-gradient(90deg, rgba(229, 9, 20, .35), rgba(229, 9, 20, .08)) !important;
+    color: #fff !important;
+    font-weight: 800 !important;
+    border-left: 3px solid var(--red) !important;
+    padding-left: 13px !important;
+}
+
+#nav-sidebar .current-app,
+#nav-sidebar .current-model {
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+#nav-sidebar .addlink {
+    color: #9be15d !important;
+    font-weight: 700;
+}
+
+#nav-sidebar .addlink:hover {
+    color: #c6ff7a !important;
+}
+
+.inline-group .tabular {
+    overflow-x: hidden !important;
+}
+
+.inline-group .tabular table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+}
+
+.inline-group .tabular td,
+.inline-group .tabular th {
+    padding: 12px !important;
+    border-top: 1px solid rgba(255, 255, 255, .06) !important;
+    vertical-align: middle !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.inline-group .tabular thead th {
+    background: rgba(255, 255, 255, .03) !important;
+    color: rgba(255, 255, 255, .72) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
+    font-size: 12px !important;
+    letter-spacing: .06em !important;
+    text-transform: uppercase !important;
+}
+
+.inline-group .tabular tbody tr:hover {
+    background: rgba(229, 9, 20, .06) !important;
+}
+
+.inline-group .tabular th.original,
+.inline-group .tabular td.original {
+    width: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}
+
+.inline-group .tabular th.delete,
+.inline-group .tabular td.delete {
+    width: 72px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+.inline-group .tabular th.column-genre,
+.inline-group .tabular td.field-genre {
+    width: calc(100% - 72px) !important;
+}
+
+.inline-group .tabular th.column-person,
+.inline-group .tabular td.field-person {
+    width: 70% !important;
+}
+
+.inline-group .tabular th.column-role,
+.inline-group .tabular td.field-role {
+    width: calc(30% - 72px) !important;
+}
+
+.inline-group select,
+.inline-group input,
+.inline-group textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+}
+
+.inline-group .related-widget-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.inline-group .related-widget-wrapper select {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+.nx-preview {
+    position: relative;
+    display: inline-block;
+    border-radius: var(--r);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .10);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, .55);
+}
+
+.nx-preview img {
+    width: 100% !important;
+    max-width: 860px !important;
+    aspect-ratio: 16 / 9 !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.form-row .readonly img:not(.icon),
+fieldset .readonly img:not(.icon) {
+    width: 100% !important;
+    max-width: 860px !important;
+    aspect-ratio: 16 / 9 !important;
+    object-fit: cover !important;
+    display: block !important;
+    border-radius: var(--r) !important;
+    border: 1px solid rgba(255, 255, 255, .10) !important;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, .55) !important;
+}
+
+#nav-sidebar .current-model, #nav-sidebar .current-app {
+    background: rgba(229, 9, 20, .12) !important;
+    border-radius: 12px;
+    border: 1px solid rgba(229, 9, 20, .18);
+}
+
+#nav-sidebar a {
+    color: rgba(255, 255, 255, .70) !important;
+}
+
+#nav-sidebar a:hover {
+    color: var(--text) !important;
+}
