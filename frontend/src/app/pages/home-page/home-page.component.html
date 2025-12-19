@@ -1,0 +1,48 @@
+<div class="page">
+  <div class="topbar">
+    <div class="brand">
+      <span class="logo">🎬</span>
+      <div class="brand-text">
+        <div class="brand-title">Netflix at Home</div>
+        <div class="brand-subtitle">Найди фильм и смотри сразу</div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input
+        class="search"
+        type="text"
+        [formControl]="search"
+        placeholder="Поиск по названию…"
+      />
+      <button class="icon-btn" type="button" (click)="clearSearch()" [disabled]="!search.value">
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <div class="state" *ngIf="loading">Загрузка…</div>
+  <div class="state error" *ngIf="!loading && error">{{ error }}</div>
+
+  <div class="grid" *ngIf="!loading && !error && films.length > 0">
+    <div class="card" *ngFor="let f of films">
+      <img class="poster" [src]="f.preview || f.posterUrl" alt="poster" />
+
+      <div class="meta">
+        <button class="title" type="button" (click)="openMovie(f.id)">
+          {{ f.title }}
+        </button>
+
+        <div class="chips">
+          <span class="chip rating">⭐ {{ f.imdb_rating }}</span>
+          <!--<span class="chip">{{ f.genre }}</span>
+          <span class="chip kind">{{ f.kind }}</span>-->
+        </div>
+
+        <button class="watch" type="button" (click)="openMovie(f.id)">
+          Смотреть
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,82 @@
+<div class="page">
+  <div class="top">
+    <button class="back" type="button" (click)="back()">← Назад</button>
+
+    <div class="head" *ngIf="film">
+      <div class="title">{{ film.title }}</div>
+
+      <div class="meta">
+        <span class="chip rating">⭐ {{ film.imdb_rating }}</span>
+
+        <span class="chip" *ngFor="let g of (film.genres || [])">
+          {{ g }}
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="state" *ngIf="loading">Загрузка…</div>
+  <div class="state error" *ngIf="!loading && error">{{ error }}</div>
+
+  <div class="card" *ngIf="!loading && !error && film">
+    <div class="poster-wrap">
+      <img
+        class="poster"
+        [src]="film.preview || defaultPreview"
+        alt="poster"
+      />
+    </div>
+
+    <div class="info">
+      <div class="block">
+        <div class="label">Описание</div>
+        <div class="text">{{ film.description || '—' }}</div>
+      </div>
+
+      <div class="grid">
+        <div class="block">
+          <div class="label">Режиссёры</div>
+          <div class="text">{{ join(film.directors_names) }}</div>
+        </div>
+
+        <div class="block">
+          <div class="label">Актёры</div>
+          <div class="text">{{ join(film.actors_names) }}</div>
+        </div>
+
+        <div class="block">
+          <div class="label">Сценаристы</div>
+          <div class="text">{{ join(film.writers_names) }}</div>
+        </div>
+      </div>
+
+      <div class="people">
+        <div class="people-col" *ngIf="film.directors.length">
+          <div class="label">Directors</div>
+          <div class="pills">
+            <span class="pill" *ngFor="let p of film.directors">{{ p.name }}</span>
+          </div>
+        </div>
+
+        <div class="people-col" *ngIf="film.actors.length">
+          <div class="label">Actors</div>
+          <div class="pills">
+            <span class="pill" *ngFor="let p of film.actors">{{ p.name }}</span>
+          </div>
+        </div>
+
+        <div class="people-col" *ngIf="film.writers.length">
+          <div class="label">Writers</div>
+          <div class="pills">
+            <span class="pill" *ngFor="let p of film.writers">{{ p.name }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="watch-big" type="button" (click)="watch()">
+        ▶ Смотреть фильм
+      </button>
+    </div>
+  </div>
+</div>

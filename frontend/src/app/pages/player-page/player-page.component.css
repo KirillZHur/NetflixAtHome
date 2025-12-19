@@ -1,0 +1,165 @@
+.page {
+  min-height: 100vh;
+  padding: 22px;
+  background: radial-gradient(circle at top, #1c1f2b, #0b0d12);
+  color: #fff;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.back {
+  border: none;
+  cursor: pointer;
+  background: #141625;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+}
+
+.title-wrap {
+  flex: 1;
+  min-width: 220px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.subtitle {
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: #aab3ff;
+}
+
+.chip {
+  background: #141625;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #d7dcff;
+}
+
+.play-btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  color: #000;
+}
+
+.play-btn:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+.state {
+  margin-top: 14px;
+  opacity: .9;
+}
+
+.state.error {
+  color: #ffbcbc;
+  background: rgba(255, 80, 80, 0.15);
+  padding: 10px 12px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.player-card {
+  margin-top: 12px;
+  background: #141625;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 18px 55px rgba(0,0,0,.45);
+}
+
+.video-wrap {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0f1120;
+}
+
+.video {
+  width: 100%;
+  height: 420px;
+  display: block;
+  object-fit: cover;
+  background: #0f1120;
+}
+
+@media (max-width: 720px) {
+  .video {
+    height: 240px;
+  }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at top, rgba(20,22,37,.35), rgba(0,0,0,.65));
+  backdrop-filter: blur(2px);
+}
+
+.video-wrap.playing .overlay {
+  display: none;
+}
+
+.overlay-inner {
+  text-align: center;
+  padding: 18px;
+  max-width: 520px;
+}
+
+.overlay-title {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.overlay-text {
+  margin-top: 8px;
+  color: #cfd6ff;
+  font-size: 14px;
+}
+
+.overlay-play {
+  margin-top: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  color: #000;
+}
+
+.desc {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #1f2236;
+}
+
+.desc-title {
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.desc-text {
+  color: #d7dcff;
+  line-height: 1.4;
+}
