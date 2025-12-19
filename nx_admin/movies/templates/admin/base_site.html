@@ -1,16 +1,25 @@
 {% extends "admin/base_site.html" %}
 {% load static %}
 
-{% block extrastyle %}
+{% block extrahead %}
+  <script>
+    (function () {
+      try {
+        localStorage.setItem("theme", "dark");
+        localStorage.setItem("django:theme", "dark");
+        localStorage.setItem("admin-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+
   {{ block.super }}
+
   <link rel="stylesheet" href="{% static 'admin_static/admin.css' %}">
 {% endblock %}
 
 {% block header %}
-    {{ block.super }}
-    <style>
-        .theme-toggle {
-            display: none !important;
-        }
-    </style>
+  {{ block.super }}
+  <style>
+    .theme-toggle { display: none !important; }
+  </style>
 {% endblock %}

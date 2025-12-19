@@ -12,6 +12,7 @@ def get_s3_client():
         region_name='us-east-1',
     )
 
+
 def _upload_file(file_obj, *, prefix: str):
     ext = file_obj.name.split('.')[-1].lower()
     key = f'{prefix}/{uuid.uuid4()}.{ext}'

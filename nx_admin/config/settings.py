@@ -3,7 +3,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
@@ -36,7 +35,6 @@ if DEBUG:
         "debug_toolbar",
     )
 
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -52,7 +50,6 @@ if DEBUG:
     MIDDLEWARE.append(
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     )
-
 
 ROOT_URLCONF = "config.urls"
 
@@ -86,7 +83,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -136,4 +132,3 @@ MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY')
 MINIO_BUCKET_NAME = os.getenv('MINIO_BUCKET', 'movies')
 MINIO_PUBLIC_BASE = os.getenv('MINIO_PUBLIC_BASE', 'movies')
-
