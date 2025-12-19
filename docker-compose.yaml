@@ -165,6 +165,16 @@ services:
       - consumer_film
       - consumer_user
 
+  nx_etl:
+    build: nx_etl_pg_es/
+    container_name: nx_etl
+    <<: *default-env
+    restart: always
+    depends_on:
+      - database_nx_admin
+      - redis
+      - elasticsearch
+
   consumer_film:
     build: nx_etl_kafka_ch/
     environment:
