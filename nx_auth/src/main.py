@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 import core.session as session
 import logstash
 from aiohttp import ClientSession
-from api.v1 import auth, managment, token
+from api.v1 import auth, token
 from core.config import (ENABLE_TRACER, JAEGER_CONFIG, PROJECT_NAME,
                          REDIS_CONFIG)
 from core.tracer import configure_tracer
@@ -76,7 +76,6 @@ api_router_main = APIRouter(prefix="/auth-service")
 api_router_v1 = APIRouter(prefix="/api/v1")
 
 api_router_v1.include_router(auth.router, prefix="/auth", tags=["auth"])
-api_router_v1.include_router(managment.router, prefix="/managment", tags=["managment"])
 api_router_v1.include_router(token.router, prefix="/token", tags=["token"])
 
 api_router_main.include_router(api_router_v1)
