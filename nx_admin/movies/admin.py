@@ -20,10 +20,12 @@ from movies.s3 import upload_video, upload_image
 from django.utils.html import format_html
 from django.conf import settings
 
+
 def public_image_url(key: str) -> str:
     base = settings.MINIO_PUBLIC_BASE
     bucket = settings.MINIO_BUCKET_NAME
     return f"{base}/{bucket}/{key}"
+
 
 class GenreFilmWorkInline(admin.TabularInline):
     model = GenreFilmWork
@@ -44,7 +46,7 @@ class FilmWorkAdminForm(forms.ModelForm):
             FileExtensionValidator(
                 allowed_extensions=["mp4", "mov", "avi", "mkv", "wmv", "webm"]
             )
-        ],    )
+        ], )
     preview_file = forms.FileField(
         label="Preview file",
         required=False,
@@ -112,6 +114,7 @@ class FilmWorkAdmin(admin.ModelAdmin):
             '<div class="nx-preview"><img src="{}"></div>',
             url
         )
+
     poster_preview.short_description = "Saved preview file"
 
 
@@ -126,5 +129,6 @@ class PersonAdmin(admin.ModelAdmin):
     inlines = (PersonFilmWorkInline,)
     list_display = ("full_name",)
     search_fields = ("full_name",)
+
 
 admin.site.unregister(Group)
