@@ -4,6 +4,148 @@ x-env:
     - .env
 
 services:
+  database:
+    image: postgres:16
+    container_name: database
+    <<: *default-env
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}" ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+
+  database_nx_admin:
+    image: postgres:16
+    container_name: database_nx_admin
+    environment:
+      POSTGRES_DB: movies
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
+      POSTGRES_HOST: database_nx_admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_nx_admin_volume:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}" ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+
+  elasticsearch:
+    image: elasticsearch:8.6.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl localhost:9200" ]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    depends_on:
+      - database
+
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+      - redis_volume:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://127.0.0.1:5044
+        tag: nginx
+    expose:
+      - 8000
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/static
+    depends_on:
+      - database
+      - nx_admin
+      - nx_auth
+
+  nx_backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./nx_content
+    container_name: nx_backend
+    <<: *default-env
+    ports:
+      - "8002:8000"
+    command:
+      [ "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8002/api/openapi || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - redis
+      - elasticsearch
+
+  nx_auth:
+    build:
+      dockerfile: Dockerfile
+      context: ./nx_auth
+    container_name: nx_auth
+    <<: *default-env
+    ports:
+      - "8001:8001"
+    command:
+      [ "sh", "-c", "alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --port 8001" ]
+    volumes:
+      - ./nx_auth:/app
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8001/api/openapi || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      redis:
+        condition: service_healthy
+      database:
+        condition: service_healthy
+
+  nx_admin:
+    build: nx_admin/
+    container_name: nx_admin
+    <<: *default-env
+    restart: always
+    ports:
+      - "8010:8000"
+    command:
+      [ "sh", "-c", "python3 manage.py runserver" ]
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "localhost:8000/admin" ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+    volumes:
+      - static_volume:/opt/app/static
+    depends_on:
+      - database_nx_admin
 
   nx_metrics:
     build: nx_metrics/
