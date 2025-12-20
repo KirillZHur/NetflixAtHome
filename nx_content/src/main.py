@@ -12,12 +12,22 @@ from aiohttp import ClientSession
 from api.v1 import films, genres, persons, heartbeat, storage
 from core.config import ES_CONFIG, PROJECT_NAME, REDIS_CONFIG, S3_CONFIG
 from core.token import get_user_from_auth_service
+from core.tracer import setup_tracer
 from db import elastic, redis, s3
 from elasticsearch import AsyncElasticsearch
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.responses import ORJSONResponse
-from fastapi.middleware.cors import CORSMiddleware
+from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
+from opentelemetry.instrumentation.elasticsearch import ElasticsearchInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from redis.asyncio import Redis
+
+
+setup_tracer()
+AioHttpClientInstrumentor().instrument()
+RedisInstrumentor().instrument()
+ElasticsearchInstrumentor().instrument()
 
 
 @asynccontextmanager
@@ -61,6 +71,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+FastAPIInstrumentor.instrument_app(app)
 
 BASE_DIR = Path(__file__).resolve().parent
 logger.remove()

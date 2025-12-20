@@ -1,4 +1,9 @@
 from configs.settings import (elastic_config, pg_config, redis_config)
+from core.tracer import setup_tracer
+from opentelemetry.instrumentation.elasticsearch import ElasticsearchInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.psycopg import PsycopgInstrumentor
 from related.es_loader import ESLoader, Loader
 from related.etl import Etl, PostgresToEsEtl
 from related.pg_extractor import Extractor, PGExtractor
@@ -32,6 +37,12 @@ class ETLProcess:
 
 
 if __name__ == "__main__":
+
+    setup_tracer()
+    ElasticsearchInstrumentor().instrument()
+    RequestsInstrumentor().instrument()
+    RedisInstrumentor().instrument()
+    PsycopgInstrumentor().instrument()
 
     etl_process = ETLProcess(
         pg_config,
