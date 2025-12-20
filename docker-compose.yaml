@@ -86,6 +86,16 @@ services:
       - nx_admin
       - nx_auth
 
+  nx_etl:
+    build: nx_etl_pg_es/
+    container_name: nx_etl
+    <<: *default-env
+    restart: always
+    depends_on:
+      - database_nx_admin
+      - redis
+      - elasticsearch
+
   nx_backend:
     build:
       dockerfile: Dockerfile
@@ -128,15 +138,29 @@ services:
       database:
         condition: service_healthy
 
+  nx_metrics:
+    build: nx_metrics/
+    container_name: nx_metrics
+    <<: *default-env
+    ports:
+      - "8900:5000"
+    depends_on:
+      - consumer_user
+      - consumer_film
+    environment:
+        PYTHONUNBUFFERED: 1
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:5000/ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+
   nx_admin:
     build: nx_admin/
     container_name: nx_admin
     <<: *default-env
     restart: always
-    ports:
-      - "8010:8000"
-    command:
-      [ "sh", "-c", "python3 manage.py runserver" ]
     healthcheck:
       test: [ "CMD", "curl", "--fail", "localhost:8000/admin" ]
       interval: 15s
@@ -146,34 +170,6 @@ services:
       - static_volume:/opt/app/static
     depends_on:
       - database_nx_admin
-
-  nx_metrics:
-    build: nx_metrics/
-    container_name: nx_metrics
-    <<: *default-env
-    ports:
-      - "8900:5000"
-    environment:
-      PYTHONUNBUFFERED: 1
-    healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:5000/ping" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: always
-    depends_on:
-      - consumer_film
-      - consumer_user
-
-  nx_etl:
-    build: nx_etl_pg_es/
-    container_name: nx_etl
-    <<: *default-env
-    restart: always
-    depends_on:
-      - database_nx_admin
-      - redis
-      - elasticsearch
 
   consumer_film:
     build: nx_etl_kafka_ch/
@@ -230,21 +226,29 @@ services:
       minio:
         condition: service_healthy
     environment:
-      S3_BUCKET: ${MINIO_BUCKET:-media}
-      S3_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
-      S3_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-media}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
     volumes:
-      - ./public-images-policy.json:/public-images-policy.json:ro
+      - type: bind
+        source: ./public-images-policy.json
+        target: /public-images-policy.json
+        read_only: true
     entrypoint: >
       /bin/sh -c "
       echo 'wait minio...' &&
       mc alias set local http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} &&
       mc mb -p local/${MINIO_BUCKET} || true &&
       mc ls local &&
-      mc anonymous set-json public-images-policy.json local/${MINIO_BUCKET}
+      mc anonymous set-json /public-images-policy.json local/${MINIO_BUCKET}
       "
     restart: "no"
 
+
 volumes:
-  grafana_data:
+  redis_volume:
+  es_data:
+  db_volume:
+  static_volume:
+  db_nx_admin_volume:
   minio_data:
