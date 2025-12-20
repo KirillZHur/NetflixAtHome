@@ -55,6 +55,10 @@
 * **Синхронизация:** асинхронная репликация данных из Postgres в Elasticsearch
 * **Наблюдаемость и хранение:** логирование, отправка метрик в ClickHouse через Kafka без влияния на пользовательский поток, резервное копирование данных, дашборды в Grafana
 
+## Архитектура решения
+
+![архитектура](images/architecture.png)
+
 ## Админка
 
 ![админка](images/admin.png)
@@ -133,6 +137,14 @@ docker-compose up nx_etl
 ```
 
 ## 5. Настройка страницы метрик в Grafana
+
+```
+make up_kafka
+
+make up_clickhouse
+
+docker-compose up grafana consumer_user consumer_film nx_metrics
+```
 
 ### 5.1. Запуск Grafana
 
