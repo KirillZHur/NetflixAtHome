@@ -213,6 +213,13 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -264,4 +271,5 @@ volumes:
   db_volume:
   static_volume:
   db_nx_admin_volume:
+
   minio_data:
