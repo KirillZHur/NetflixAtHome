@@ -169,3 +169,22 @@ docker-compose up -d jaeger
 ```
 
 Jaeger UI будет доступен по адресу: [http://localhost:16686/](http://localhost:16686/)
+
+## 7. Логи
+
+### 7.1. Запуск
+
+```bash
+docker-compose up -d logstash kibana
+```
+
+### 7.2. Импорт data_value
+
+1. Management -> Stack Management (справа на панели)
+2. Перейти в Kibana -> Saved Objects
+3. Нажать **Import**
+4. Загрузить  [export.ndjson](./logging/export.ndjson)
+
+### 7.3 Просмотр метрик
+
+1. Перейти в Analytics -> Discover (справа на панели) 

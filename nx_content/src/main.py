@@ -17,6 +17,7 @@ from db import elastic, redis, s3
 from elasticsearch import AsyncElasticsearch
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.responses import ORJSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
 from opentelemetry.instrumentation.elasticsearch import ElasticsearchInstrumentor
 from opentelemetry.instrumentation.redis import RedisInstrumentor
