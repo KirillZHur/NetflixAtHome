@@ -11,6 +11,10 @@ from db import redis
 from db.const import constants
 from fastapi import APIRouter, FastAPI
 from fastapi.responses import ORJSONResponse
+from opentelemetry.instrumentation.aiohttp_client import AioHttpClientInstrumentor
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from loguru import logger
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from redis.asyncio import Redis
@@ -90,5 +94,16 @@ app.add_middleware(RateLimitMiddleware, redis_=Redis(**REDIS_CONFIG))
 if ENABLE_TRACER:
     configure_tracer(config=JAEGER_CONFIG)
     FastAPIInstrumentor.instrument_app(app)
+
+    AioHttpClientInstrumentor().instrument()
+    RedisInstrumentor().instrument()
+    RequestsInstrumentor().instrument()
+
+    try:
+        from core.tracer import setup_tracer
+
+        setup_tracer()
+    except Exception:
+        pass
 
     app.add_middleware(RequestIdMiddleware)
