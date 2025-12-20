@@ -161,3 +161,11 @@ docker-compose up -d grafana
 3. Нажать **Import**
 4. Во всех панелях изменить источник данных на созданный ранее
 5. Сохранить дашборд и нажать **Refresh**, если данные не отобразились
+   
+## 6. Трейсинг
+
+```bash
+docker-compose up -d jaeger
+```
+
+Jaeger UI будет доступен по адресу: [http://localhost:16686/](http://localhost:16686/)
