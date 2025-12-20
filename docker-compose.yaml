@@ -18,6 +18,11 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   database_nx_admin:
     image: postgres:16
@@ -37,6 +42,11 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   elasticsearch:
     image: elasticsearch:8.6.2
@@ -46,6 +56,8 @@ services:
       - xpack.security.enabled=false
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
     healthcheck:
       test: [ "CMD-SHELL", "curl localhost:9200" ]
       interval: 30s
@@ -53,6 +65,11 @@ services:
       retries: 3
     depends_on:
       - database
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   redis:
     image: redis
@@ -64,16 +81,21 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   nginx:
     image: nginx:latest
     container_name: nginx
     restart: always
     logging:
-      driver: gelf
+      driver: "gelf"
       options:
-        gelf-address: udp://127.0.0.1:5044
-        tag: nginx
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
     expose:
       - 8000
     ports:
@@ -98,6 +120,11 @@ services:
       - database_nx_admin
       - redis
       - elasticsearch
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   nx_backend:
     build:
@@ -120,6 +147,11 @@ services:
     depends_on:
       - redis
       - elasticsearch
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   nx_auth:
     build:
@@ -147,6 +179,11 @@ services:
         condition: service_healthy
       database:
         condition: service_healthy
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   nx_metrics:
     build: nx_metrics/
@@ -165,6 +202,11 @@ services:
       timeout: 10s
       retries: 3
     restart: always
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   nx_admin:
     build: nx_admin/
@@ -183,6 +225,11 @@ services:
       - static_volume:/opt/app/static
     depends_on:
       - database_nx_admin
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   consumer_film:
     build: nx_etl_kafka_ch/
@@ -192,6 +239,11 @@ services:
       - PYTHONUNBUFFERED=1
       - CLICKHOUSE_NODE_MAIN=clickhouse-node1
       - BOOTSTRAP_SERVERS=kafka-0:9092
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   consumer_user:
     build: nx_etl_kafka_ch/
@@ -201,6 +253,11 @@ services:
       - PYTHONUNBUFFERED=1
       - CLICKHOUSE_NODE_MAIN=clickhouse-node1
       - BOOTSTRAP_SERVERS=kafka-0:9092
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://host.docker.internal:12201"
+        tag: "{{.Name}}"
 
   grafana:
     image: grafana/grafana:latest
@@ -212,6 +269,7 @@ services:
       - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./logging/grafana-provisioning:/etc/grafana/provisioning
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -264,6 +322,30 @@ services:
       "
     restart: "no"
 
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.2
+    container_name: logstash
+    ports:
+      - "12201:12201/udp"   # GELF UDP вход для docker logging driver
+    environment:
+      LS_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+      LOG_INDEX_PREFIX: "docker-logs"
+    volumes:
+      - ./logging/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.6.2
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
 
 volumes:
   redis_volume:
@@ -271,5 +353,5 @@ volumes:
   db_volume:
   static_volume:
   db_nx_admin_volume:
-
+  grafana_data:
   minio_data:
